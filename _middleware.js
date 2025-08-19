@@ -2,9 +2,9 @@ export async function onRequest(context) {
   // Get the original page response.
   const response = await context.next();
 
-  // Get the Firebase config from the secure environment variables you will set in Cloudflare.
+  // Get the Firebase config from the secure environment variables.
   const firebaseConfig = {
-    apiKey: context.env.a,
+    apiKey: context.env.api,
     authDomain: context.env.d,
     projectId: context.env.i,
     storageBucket: context.env.b,
@@ -12,16 +12,21 @@ export async function onRequest(context) {
     appId: context.env.app,
   };
 
-  // This creates a new script tag containing your secure config.
   const injectionScript = `<script>window.firebaseConfig = ${JSON.stringify(firebaseConfig)};</script>`;
 
-  // Use HTMLRewriter to safely inject the new script tag into the <head> of your HTML file.
-  return new HTMLRewriter()
+  // Use HTMLRewriter to inject both the config and a visible test banner.
+  const rewriter = new HTMLRewriter()
     .on('head', {
       element(element) {
         element.append(injectionScript, { html: true });
       },
     })
-    .transform(response);
+    .on('body', {
+        element(element) {
+            // This will add a visible red banner if the middleware runs.
+            element.prepend('<h1 style="background:red; color:white; text-align:center; padding: 5px;">Middleware Test: If you see this, the middleware file is running.</h1>', { html: true });
+        }
+    });
 
+  return rewriter.transform(response);
 }
