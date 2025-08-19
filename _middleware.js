@@ -3,14 +3,12 @@ export async function onRequest(context) {
   const response = await context.next();
 
   // Get the Firebase config from the secure environment variables.
-  const firebaseConfig = {
-    apiKey: context.env.api,
-    authDomain: context.env.d,
-    projectId: context.env.i,
-    storageBucket: context.env.b,
-    messagingSenderId: context.env.id,
-    appId: context.env.app,
-  };
+  const firebaseConfig = { apiKey: "AIzaSyA7HDg-yqwiq1ZFK5xD1W7L71-w7ItmqiM",
+            authDomain: "mtl180.firebaseapp.com",
+            projectId: "mtl180",
+            storageBucket: "mtl180.firebasestorage.app",
+            messagingSenderId: "476344011370",
+            appId: "1:476344011370:web:29637e12acc6b5b84bd813" };
 
   const injectionScript = `<script>window.firebaseConfig = ${JSON.stringify(firebaseConfig)};</script>`;
 
@@ -30,3 +28,4 @@ export async function onRequest(context) {
 
   return rewriter.transform(response);
 }
+
