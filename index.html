@@ -103,18 +103,27 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getFirestore, collection, getDocs, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = window.firebaseConfig;
+       // --- CONFIG ---
+// This line will ONLY work when deployed to Cloudflare. 
+// It reads the configuration securely injected by the _middleware.js file.
+const firebaseConfig = window.firebaseConfig;
 const appId = 'course-resource-hub-data'; // Your fixed app ID
 
 // --- INITIALIZATION ---
 let db;
-        try {
-            const app = initializeApp(window.firebaseConfig || firebaseConfig);
-            db = getFirestore(app);
-        } catch (e) {
-            console.error("Firebase initialization failed.", e);
-            document.getElementById('loader').innerHTML = '<p class="text-red-500">Error: Could not connect to the database.</p>';
-        }
+try {
+    // This will throw an error locally, which is expected.
+    // It will succeed when deployed because window.firebaseConfig will exist.
+    const app = initializeApp(firebaseConfig);
+    db = getFirestore(app);
+} catch (e) {
+    console.error("Firebase initialization failed.", e);
+    // Display a user-friendly message
+    const loader = document.getElementById('loader');
+    if(loader) {
+        loader.innerHTML = '<p class="text-red-500 font-semibold">Error: Could not connect to the database. This app must be run from its deployed Cloudflare URL.</p>';
+    }
+}
 
         const ui = {
             loader: document.getElementById('loader'),
@@ -401,3 +410,4 @@ let db;
     </script>
 </body>
 </html>
+
